@@ -78,7 +78,7 @@ class Application(tk.Frame):
 
     def __executeUpdateCommand(self, updateCmd):
         updateProc = subprocess.Popen(updateCmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-        std_err, std_out = updateProc.communicate()
+        std_out, std_err = updateProc.communicate()
         updateProc.wait()
         print(std_out)
 
