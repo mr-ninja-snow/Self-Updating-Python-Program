@@ -1,3 +1,4 @@
+import re
 import subprocess
 import tkinter as tk
 from tkinter import messagebox
@@ -36,8 +37,48 @@ class Application(tk.Frame):
 
         messagebox.showinfo("Updater", "You are running the latest version of the application!")
 
-    def __checkForNewRelease(self):
+    def __getBranchList(self):
+        gitCmd = 'git branch -a'
+        output = subprocess.check_output(gitCmd)
+        branches = output.decode('utf-8').splitlines()
+        return branches
+
+    def __checkForNewMajorOrMinorRelease(self, branches):
+        currentVersion = self.__majorAndMinoreRelease.split('.')
+        currentBranchMajorVersion = int(currentVersion[0])
+        currentBranchMinorVersion = int(currentVersion[1])
+        currentVersion = currentBranchMajorVersion*10 + currentBranchMinorVersion
+
+        latestMajorRelease = 0
+        latestMinorRelease = 0
+        latestVersion = 0
+        for branchName in branches:
+            if '*' in branchName or 'HEAD' in branchName:
+                continue
+
+            match = re.findall(r'r(\d+)\.(\d+)', branchName)
+            if match:
+                majorRelease = int(match[0][0])
+                minorRelease = int(match[0][1])
+                version = majorRelease*10 + minorRelease
+                if version > currentVersion and version > latestVersion:
+                    latestMajorRelease = majorRelease
+                    latestMinorRelease = minorRelease
+                    latestVersion = version
+
+        if latestVersion:
+            latestReleaseBranchName = 'r{}.{}'.format(latestMajorRelease, latestMinorRelease)
+            self.__updateToLatestMajorOrMinorRelease(latestReleaseBranchName)
+            return True
         return False
+
+    def __updateToLatestMajorOrMinorRelease(self, latestReleaseBranchName):
+        updateCmd = 'pip install --upgrade --src=".." -e git+https://github.com/mr-ninja-snow/Self-Updating-Python-Program.git@origin/{}#egg=Self-Updating-Python-Program'.format(latestReleaseBranchName)
+        subprocess.Popen(updateCmd)
+
+    def __checkForNewRelease(self):
+        branches = self.__getBranchList()
+        return self.__checkForNewMajorOrMinorRelease(branches)
 
     def __getTagList(self):
         gitCmd = 'git tag -l "r{}*"'.format(self.__majorAndMinoreRelease)
