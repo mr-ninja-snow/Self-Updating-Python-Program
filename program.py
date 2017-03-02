@@ -72,9 +72,29 @@ class Application(tk.Frame):
             return True
         return False
 
+    def __stashLocalChanges(self):
+        updateCmd = 'git stash'
+        subprocess.call(updateCmd)
+
+    def __executeUpdateCommand(self, updateCmd):
+        updateProc = subprocess.Popen(updateCmd, stderr=subprocess.PIPE)
+        std_err = updateProc.communicate()
+        updateProc.wait()
+
+        if std_err:
+            std_err = std_err.decode('utf-8')
+            if "Your local changes" in std_err:
+                errMsg = "The following error occurred during the update process:\n{}\n\nIf you want to automatically stash the changes and continue the update press 'Yes'. If you want to abort the update press 'No'.".format(std_err)
+                result = messagebox.askquestion("Updater ERROR!", errMsg, icon='error')
+                if result == 'yes':
+                    self.__stashLocalChanges()
+            else:
+                errMsg = "The following error occurred during the update process:\n{}\n\nPlease check the local copy! Aborting the update."
+                messagebox.showerror("Updater ERROR!", errMsg, icon='error')
+
     def __updateToLatestMajorOrMinorRelease(self, latestReleaseBranchName):
         updateCmd = 'git checkout {}'.format(latestReleaseBranchName)
-        subprocess.call(updateCmd)
+        self.__executeUpdateCommand(updateCmd)
 
     def __checkForNewRelease(self):
         branches = self.__getBranchList()
@@ -101,7 +121,7 @@ class Application(tk.Frame):
 
     def __updateToLatestMaintenanceRelease(self, latestMaintenanceReleaseTag):
         updateCmd = 'git checkout tags/{}'.format(latestMaintenanceReleaseTag)
-        subprocess.call(updateCmd)
+        self.__executeUpdateCommand(updateCmd)
 
     def __checkForBugfixes(self):
         tags = self.__getTagList()
