@@ -94,7 +94,7 @@ class Application(tk.Frame):
                 latestMaintenanceRelease = tagMaintenanceRelease
 
         if latestMaintenanceRelease:
-            latestMaintenanceReleaseTag = 'r{}.{}'.format(self.__maintenanceRelease, latestMaintenanceRelease)
+            latestMaintenanceReleaseTag = 'r{}.{}'.format(self.__majorAndMinoreRelease, latestMaintenanceRelease)
             self.__updateToLatestMaintenanceRelease(latestMaintenanceReleaseTag)
             return True
         return False
