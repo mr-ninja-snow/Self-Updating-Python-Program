@@ -82,8 +82,8 @@ class Application(tk.Frame):
         updateProc.wait()
         print(std_out)
 
-        if std_err:
-            std_err = std_err.decode('utf-8')
+        std_err = std_err.decode('utf-8')
+        if 'error' in std_err: # for some reason git writes not only errors into stderr
             if "Your local changes" in std_err:
                 errMsg = "The following error occurred during the update process:\n{}\n\nIf you want to automatically stash the changes and continue the update press 'Yes'. If you want to abort the update press 'No'.".format(std_err)
                 result = messagebox.askquestion("Updater ERROR!", errMsg, icon='error')
