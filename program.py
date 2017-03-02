@@ -73,7 +73,7 @@ class Application(tk.Frame):
         return False
 
     def __updateToLatestMajorOrMinorRelease(self, latestReleaseBranchName):
-        updateCmd = 'pip install --upgrade --src=".." -e git+https://github.com/mr-ninja-snow/Self-Updating-Python-Program.git@origin/{}#egg=Self-Updating-Python-Program'.format(latestReleaseBranchName)
+        updateCmd = 'git checkout {}'.format(latestReleaseBranchName)
         subprocess.Popen(updateCmd)
 
     def __checkForNewRelease(self):
@@ -100,7 +100,7 @@ class Application(tk.Frame):
         return False
 
     def __updateToLatestMaintenanceRelease(self, latestMaintenanceReleaseTag):
-        updateCmd = 'pip install --upgrade --src=".." -e git+https://github.com/mr-ninja-snow/Self-Updating-Python-Program.git@{}#egg=Self-Updating-Python-Program'.format(latestMaintenanceReleaseTag)
+        updateCmd = 'git checkout tags/{}'.format(latestMaintenanceReleaseTag)
         subprocess.Popen(updateCmd)
 
     def __checkForBugfixes(self):
