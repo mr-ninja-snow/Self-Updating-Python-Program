@@ -77,9 +77,10 @@ class Application(tk.Frame):
         subprocess.call(updateCmd)
 
     def __executeUpdateCommand(self, updateCmd):
-        updateProc = subprocess.Popen(updateCmd, stderr=subprocess.PIPE)
-        std_err = updateProc.communicate()
+        updateProc = subprocess.Popen(updateCmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        std_err, std_out = updateProc.communicate()
         updateProc.wait()
+        print(std_out)
 
         if std_err:
             std_err = std_err.decode('utf-8')
