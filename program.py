@@ -74,7 +74,7 @@ class Application(tk.Frame):
 
     def __updateToLatestMajorOrMinorRelease(self, latestReleaseBranchName):
         updateCmd = 'git checkout {}'.format(latestReleaseBranchName)
-        subprocess.Popen(updateCmd)
+        subprocess.call(updateCmd)
 
     def __checkForNewRelease(self):
         branches = self.__getBranchList()
@@ -101,7 +101,7 @@ class Application(tk.Frame):
 
     def __updateToLatestMaintenanceRelease(self, latestMaintenanceReleaseTag):
         updateCmd = 'git checkout tags/{}'.format(latestMaintenanceReleaseTag)
-        subprocess.Popen(updateCmd)
+        subprocess.call(updateCmd)
 
     def __checkForBugfixes(self):
         tags = self.__getTagList()
@@ -109,7 +109,7 @@ class Application(tk.Frame):
 
     def __fetchLatestChanges(self):
         fetchCmd = "git fetch --all"
-        subprocess.Popen(fetchCmd)
+        subprocess.call(fetchCmd)
 
 root = tk.Tk()
 app = Application(master=root)
