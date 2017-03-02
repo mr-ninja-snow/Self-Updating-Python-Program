@@ -11,8 +11,8 @@ class Application(tk.Frame):
         self.__create_widgets()
 
         release = RELEASE.rsplit('.', 1)
-        self.__majorRelease = release[0]
-        self.__minorRelease = int(release[1])
+        self.__majorAndMinoreRelease = release[0]
+        self.__maintenanceRelease = int(release[1])
 
     def __create_widgets(self):
         self.version_lable = tk.Label(self, text="Your running version {}".format(RELEASE))
@@ -40,32 +40,31 @@ class Application(tk.Frame):
         return False
 
     def __getTagList(self):
-        gitCmd = 'git tag -l "v{}*"'.format(self.__majorRelease)
+        gitCmd = 'git tag -l "r{}*"'.format(self.__majorAndMinoreRelease)
         output = subprocess.check_output(gitCmd)
         tags = output.decode('utf-8').splitlines()
         return tags
 
-    def __checkForNewMinorReleases(self, tags):
-        latestMinorRelease = 0
+    def __checkForNewMaintenanceReleases(self, tags):
+        latestMaintenanceRelease = 0
         for tag in tags:
-            print(tag)
-            tagMinorRelease = int(tag.rsplit('.', 1)[1])
-            if self.__minorRelease < tagMinorRelease and tagMinorRelease > latestMinorRelease:
-                latestMinorRelease = tagMinorRelease
+            tagMaintenanceRelease = int(tag.rsplit('.', 1)[1])
+            if self.__maintenanceRelease < tagMaintenanceRelease and tagMaintenanceRelease > latestMaintenanceRelease:
+                latestMaintenanceRelease = tagMaintenanceRelease
 
-        if latestMinorRelease:
-            latestMinorReleaseTag = 'v{}{}'.format(self.__majorRelease, latestMinorRelease)
-            self.__updateToLatestMinorRelease(latestMinorReleaseTag)
+        if latestMaintenanceRelease:
+            latestMaintenanceReleaseTag = 'r{}.{}'.format(self.__maintenanceRelease, latestMaintenanceRelease)
+            self.__updateToLatestMaintenanceRelease(latestMaintenanceReleaseTag)
             return True
         return False
 
-    def __updateToLatestMinorRelease(self, latestMinorReleaseTag):
-        updateCmd = 'pip install --upgrade --src=".." -e git+https://github.com/mr-ninja-snow/Self-Updating-Python-Program.git@{}#egg=Self-Updating-Python-Program'.format(latestMinorReleaseTag)
+    def __updateToLatestMaintenanceRelease(self, latestMaintenanceReleaseTag):
+        updateCmd = 'pip install --upgrade --src=".." -e git+https://github.com/mr-ninja-snow/Self-Updating-Python-Program.git@{}#egg=Self-Updating-Python-Program'.format(latestMaintenanceReleaseTag)
         subprocess.Popen(updateCmd)
 
     def __checkForBugfixes(self):
         tags = self.__getTagList()
-        return self.__checkForNewMinorReleases(tags)
+        return self.__checkForNewMaintenanceReleases(tags)
 
     def __fetchLatestChanges(self):
         fetchCmd = "git fetch --all"
